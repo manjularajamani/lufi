@@ -26,7 +26,7 @@ dev: clean
 	$(CARTON) morbo $(LUFI) --listen http://0.0.0.0:3000 --watch lib/ --watch script/ --watch themes/ --watch lufi.conf
 
 ldap:
-	sudo docker run --privileged -d -p 389:389 rroemhild/test-openldap; exit 0
+	sudo docker run --privileged -d -p 10389:10389 rroemhild/test-openldap; exit 0
 
 ldapdev: ldap dev
 
