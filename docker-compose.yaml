@@ -1,0 +1,37 @@
+version: '3'
+services:
+
+  lufi:
+    build: ./
+    container_name: lufi
+    restart: unless-stopped
+    environment:
+      LUFI__CONTACT: <a href="https://contact.example.com">Contact page</a>
+      LUFI__REPORT: report@example.com
+      LUFI__SECRETS: S3crEt
+      LUFI__INSTANCE_NAME: Dockerized Lufi
+      LUFI__DBTYPE: mysql
+      LUFI__MYSQLDB__HOST: mysql
+      LUFI__MYSQLDB__DATABASE: lufi
+      LUFI__MYSQLDB__USER: lufi
+      LUFI__MYSQLDB__PWD: ${DB_PASSWORD:-lufi}
+      LUFI__ALLOWED_DOMAINS: "*"
+      LUFI__DEFAULT_DELAY: 7
+      LUFI__MAX_DELAY: 30
+      LUFI__MAIL__HOW: smtp
+      LUFI__MAIL__HOWARGS: smtp.example.com
+    ports:
+      - "8081:8081"
+    volumes:
+      - ${DATA_DIR:-/tmp/lufi}/files:/usr/lufi/files
+
+  mysql:
+    image: mysql:latest
+    container_name: lufi-mysql
+    restart: unless-stopped
+    environment:
+      - "MYSQL_USER=lufi"
+      - "MYSQL_PASSWORD=lufi"
+      - "MYSQL_ROOT_PASSWORD=Root@123" 
+    volumes:
+      - ${DATA_DIR:-/tmp/lufi}/mysql/data:/var/lib/mysql/
