@@ -1,0 +1,31 @@
+FROM alpine:latest
+
+WORKDIR /lufi/
+
+RUN apk update && \
+    apk add build-base libressl perl-io-socket-ssl perl-lwp-protocol-https zlib mariadb-dev perl-module-build-tiny perl-dbd-mysql sqlite-dev perl-dbd-mysql perl-uri perl-app-cpanminus perl-utils perl-dbd-sqlite perl-module-build
+
+RUN apk add perl-module-install perl-term-progressbar perl-net-ldap perl-data-entropy perl-netaddr-ip perl-text-soundex perl-dev perl-crypt-rijndael perl-cpanel-json-xs libev-dev perl-test-mock-furl perl-namespace-clean perl-mouse
+
+COPY . .
+
+RUN cpanm --force Carton Mojo::SQLite && \
+    carton install --deployment  --without=test --without=sqlite --without=postgresql --without=swift-storage --without=URI::db
+
+RUN cp lufi.conf.template lufi.conf && \
+    sed -i "s/127.0.0.1/0.0.0.0/g" lufi.conf && \
+    sed -i "s/#contact/contact/g" lufi.conf && \
+    sed -i "s/#report/report/g" lufi.conf && \
+    sed -i "207,209 s/#/ /g" lufi.conf && \
+    sed -i "210,211 s/#  / /g" lufi.conf && \
+    sed -i "212,213 s/#/ /g" lufi.conf && \
+    sed -i "214,216 s/#  / /g" lufi.conf && \
+    sed -i "217 s/#/ /g" lufi.conf && \
+    sed -i "s/#max_file_size/max_file_size/g" lufi.conf && \
+    sed -i "s/#default_delay/default_delay/g" lufi.conf && \
+    sed -i "s/#max_delay/max_delay/g" lufi.conf && \
+    sed -i "s/#secrets/secrets/g" lufi.conf
+    
+EXPOSE 8081
+
+ENTRYPOINT ["sh","/lufi/docker-entrypoint.sh"]
